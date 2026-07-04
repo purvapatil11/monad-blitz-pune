@@ -1,0 +1,14 @@
+export const CONTRACT_ADDRESS = "0xYourDeployedContractAddressHere"; 
+
+export const CONTRACT_ABI = [
+  {"inputs":[{"internalType":"string","name":"_url","type":"string"}],"name":"registerWebsite","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_websiteId","type":"uint256"},{"internalType":"string","name":"_region","type":"string"},{"internalType":"bool","name":"_isUp","type":"bool"}],"name":"reportUptime","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_reportId","type":"uint256"}],"name":"disputeReport","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_reportId","type":"uint256"},{"internalType":"bool","name":"_voteUp","type":"bool"}],"name":"voteOnDispute","outputs":[],"stateMutability":"class"},
+  {"inputs":[{"internalType":"uint256","name":"_reportId","type":"uint256"}],"name":"settleReport","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[],"name":"websiteCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"reportCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"websites","outputs":[{"internalType":"string","name":"url","type":"string"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"balancePool","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"reports","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"websiteId","type":"uint256"},{"internalType":"string","name":"region","type":"string"},{"internalType":"address","name":"reporter","type":"address"},{"internalType":"uint256","name":"reporterStake","type":"uint256"},{"internalType":"bool","name":"reportedIsUp","type":"bool"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"enum UptimeProtocol.ReportStatus","name":"status","type":"uint8"},{"internalType":"address","name":"challenger","type":"address"},{"internalType":"uint256","name":"challengerStake","type":"uint256"},{"internalType":"uint256","name":"upVotes","type":"uint256"},{"internalType":"uint256","name":"downVotes","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_reportId","type":"uint256"}],"name":"getReportStatus","outputs":[{"internalType":"enum UptimeProtocol.ReportStatus","name":"","type":"uint8"}],"stateMutability":"view","type":"function"}
+] as const;
