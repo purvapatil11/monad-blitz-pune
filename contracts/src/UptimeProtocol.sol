@@ -172,4 +172,9 @@ contract UptimeProtocol {
 
         emit ReportSettled(_reportId, report.status);
     }
+
+/// @notice A simple helper to get just the status of a report, bypassing EVM stack limits
+function getReportStatus(uint256 _reportId) external view returns (ReportStatus) {
+    return reports[_reportId].status;
+    }
 }
