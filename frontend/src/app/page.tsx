@@ -1,392 +1,246 @@
-"use client";
+import Link from "next/link";
+import { Navbar } from "@/components/navbar";
+import {
+  ShieldCheck,
+  Radar,
+  Coins,
+  ArrowRight,
+  Globe2,
+  CheckCircle2,
+} from "lucide-react";
 
-import { useState } from "react";
-import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract } from "wagmi";
-import { parseEther } from "viem";
-import { injected } from "wagmi/connectors";
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/config/contract";
-import { Shield, Activity, Globe, CheckCircle2, Coins, AlertTriangle, Cpu, Terminal } from "lucide-react";
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-[#FCFCFD] text-[#16141F]">
+      <Navbar variant="marketing" />
 
-export default function Dashboard() {
-  const { address, isConnected } = useAccount();
-  const { connect } = useConnect();
-  const { disconnect } = useDisconnect();
-  const { writeContract } = useWriteContract();
-  
-  const [activeTab, setActiveTab] = useState<"owner" | "worker">("owner");
-  
-  // Form States
-  const [url, setUrl] = useState("");
-  const [deposit, setDeposit] = useState("");
-  const [selectedWebId, setSelectedWebId] = useState("1");
-  const [pingRegion, setPingRegion] = useState("US-East");
+      {/* HERO */}
+      <section className="mx-auto max-w-6xl px-6 pb-20 pt-20 md:pt-28">
+        <div className="grid items-center gap-16 md:grid-cols-2">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#E8E7ED] bg-white px-3 py-1 text-xs font-medium text-[#6B6875]">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0D8A5F] opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#0D8A5F]" />
+              </span>
+              Live on Monad Devnet
+            </div>
+            <h1 className="text-[2.75rem] font-semibold leading-[1.08] tracking-tight md:text-6xl">
+              Decentralized
+              <br />
+              Uptime Oracles.
+            </h1>
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-[#6B6875]">
+              Stop guessing if your website is down. Deposit MON into a smart contract to hire global, independent nodes that monitor your status and stake their own crypto on the results.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#7C5CFC] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6947E8]"
+              >
+                Launch Dashboard
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href="#how-it-works"
+                className="text-sm font-medium text-[#16141F] underline decoration-[#E8E7ED] underline-offset-4 transition hover:decoration-[#16141F]"
+              >
+                See how it works
+              </a>
+            </div>
 
-  // Local state for registered websites to act as fallback/demo and immediately reflect user additions
-  const [localWebsites, setLocalWebsites] = useState([
-    {
-      id: 1,
-      url: "api.monad.network",
-      pool: "450.00 MON",
-      status: "Healthy",
-      pingHistory: [true, true, true, true, true, false, true, true, true, true]
-    },
-    {
-      id: 2,
-      url: "explorer.monad.xyz",
-      pool: "120.00 MON",
-      status: "Healthy",
-      pingHistory: [true, true, true, true, true, true, true, true, true, true]
-    }
-  ]);
+            <div className="mt-12 flex gap-10 border-t border-[#E8E7ED] pt-6">
+              <div>
+                <div className="text-2xl font-semibold">780+</div>
+                <div className="text-xs text-[#6B6875]">MON pooled in escrow</div>
+              </div>
+              <div>
+                <div className="text-2xl font-semibold">3</div>
+                <div className="text-xs text-[#6B6875]">verification regions</div>
+              </div>
+              <div>
+                <div className="text-2xl font-semibold">99.9%</div>
+                <div className="text-xs text-[#6B6875]">network-wide SLA</div>
+              </div>
+            </div>
+          </div>
 
-  // 1. Read total websites count from contract
-  const { data: websiteCount } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: "websiteCount",
-  });
+          {/* Signature visual: regional consensus converging on a monitored target */}
+          <ConsensusVisual />
+        </div>
+      </section>
 
-  // 2. Hydrate data for Website ID 1 for live tracking view
-  const { data: websiteData } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: "websites",
-    args: [BigInt(1)],
-  });
+      {/* HOW IT WORKS */}
+      <section id="how-it-works" className="border-t border-[#E8E7ED] bg-white py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7C5CFC]">
+            How It Works
+          </h2>
+          <p className="mt-2 max-w-lg text-2xl font-semibold tracking-tight">
+            Trustless monitoring in three simple steps.
+          </p>
 
-  // Action: Register a Website
-  const handleRegister = async () => {
-    if (!url || !deposit) return;
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {[
+              {
+                step: "Fund the Escrow",
+                desc: "Register your website URL and deposit MON into a secure contract pool. This pool automatically funds rewards for honest nodes and processes payouts.",
+                icon: <Coins className="h-5 w-5" />,
+              },
+              {
+                step: "Independent Pings",
+                desc: "Distributed tracking nodes across US-East, EU-West, and AP-South ping your site. Every node must stake collateral behind the accuracy of their report.",
+                icon: <Radar className="h-5 w-5" />,
+              },
+              {
+                step: "On-Chain Consensus",
+                desc: "When multiple regions agree on the site status, it updates on-chain. If anyone submits a fake report, they lose their stake via community voting.",
+                icon: <ShieldCheck className="h-5 w-5" />,
+              },
+            ].map((item, i) => (
+              <div key={item.step} className="relative rounded-2xl border border-[#E8E7ED] p-6">
+                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[#F1EEFE] text-[#7C5CFC]">
+                  {item.icon}
+                </div>
+                <div className="mb-1 text-xs font-mono text-[#A6A3AD]">0{i + 1}</div>
+                <h3 className="mb-2 text-base font-semibold">{item.step}</h3>
+                <p className="text-sm leading-relaxed text-[#6B6875]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-    try {
-      if (isConnected) {
-        writeContract({
-          address: CONTRACT_ADDRESS,
-          abi: CONTRACT_ABI,
-          functionName: "registerWebsite",
-          args: [url],
-          value: parseEther(deposit),
-        });
-      }
-    } catch (e) {
-      console.error("Contract transaction failed, using clean local state fallback", e);
-    }
+      {/* FEATURES */}
+      <section id="features" className="py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7C5CFC]">
+            Why It Matters
+          </h2>
+          <p className="mt-2 max-w-lg text-2xl font-semibold tracking-tight">
+            Infrastructure built for absolute transparency.
+          </p>
 
-    // Append to local list for immediate visual update
-    setLocalWebsites(prev => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        url: url.replace(/^(https?:\/\/)?(www\.)?/, ""),
-        pool: `${parseFloat(deposit).toFixed(2)} MON`,
-        status: "Healthy",
-        pingHistory: [true, true, true, true, true, true, true, true, true, true]
-      }
-    ]);
-    setUrl("");
-    setDeposit("");
-  };
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {[
+              {
+                title: "Escrow-Backed Payouts",
+                desc: "Your monitoring contracts run autonomously on-chain. Honest node operators can immediately claim rewards guaranteed by smart contracts.",
+                icon: <Coins className="h-5 w-5 text-[#7C5CFC]" />,
+              },
+              {
+                title: "Multi-Region Accuracy",
+                desc: "No single server can claim your site is down. Status changes only update when independent global regions confirm the exact same state.",
+                icon: <Globe2 className="h-5 w-5 text-[#7C5CFC]" />,
+              },
+              {
+                title: "Permanent Incident History",
+                desc: "Forget easily modified internal databases. Every status check, active dispute, and network resolution is logged permanently onto the ledger.",
+                icon: <CheckCircle2 className="h-5 w-5 text-[#7C5CFC]" />,
+              },
+            ].map((f) => (
+              <div key={f.title} className="rounded-2xl bg-[#FCFCFD] p-6">
+                <div className="mb-4">{f.icon}</div>
+                <h3 className="mb-2 text-base font-semibold">{f.title}</h3>
+                <p className="text-sm leading-relaxed text-[#6B6875]">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-  // Action: Report Uptime Status
-  const handleReport = async (isUp: boolean) => {
-    const webIdNum = parseInt(selectedWebId);
-    
-    try {
-      if (isConnected) {
-        writeContract({
-          address: CONTRACT_ADDRESS,
-          abi: CONTRACT_ABI,
-          functionName: "reportUptime",
-          args: [BigInt(webIdNum), pingRegion, isUp],
-          value: parseEther("0.01"), // Minimal collateral stake
-        });
-      }
-    } catch (e) {
-      console.error("Contract transaction failed, updating local state", e);
-    }
+      {/* CTA BAND */}
+      <section className="border-t border-[#E8E7ED] bg-[#16141F] py-16">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 md:flex-row md:items-center">
+          <div>
+            <h3 className="text-2xl font-semibold text-white">Ready to secure your uptime?</h3>
+            <p className="mt-2 text-sm text-[#A6A3AD]">
+              Connect your web3 wallet and register your website monitor in under a minute.
+            </p>
+          </div>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-[#7C5CFC] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#8F73FF]"
+          >
+            Open Dashboard
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
 
-    // Update the local target list status dynamically
-    setLocalWebsites(prev => prev.map(w => {
-      if (w.id === webIdNum) {
-        return {
-          ...w,
-          status: isUp ? "Healthy" : "Disputed",
-          pingHistory: [...w.pingHistory.slice(1), isUp]
-        };
-      }
-      return w;
-    }));
-  };
+      <footer className="border-t border-[#E8E7ED] py-10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 text-xs text-[#A6A3AD]">
+          <span>© {new Date().getFullYear()} Pulse. Built on Monad.</span>
+          <span>Devnet Preview — Prototype architecture for hackathon evaluation.</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
-  // Merging on-chain first item if present
-  const displayedWebsites = websiteData ? [
-    {
-      id: 1,
-      url: (websiteData as any)[0] || localWebsites[0].url,
-      pool: `${Number((websiteData as any)[2]) / 1e18} MON`,
-      status: (websiteData as any)[3] ? "Healthy" : "Inactive",
-      pingHistory: localWebsites[0].pingHistory
-    },
-    ...localWebsites.slice(1)
-  ] : localWebsites;
+function ConsensusVisual() {
+  const regions = [
+    { name: "US-East", angle: -90 },
+    { name: "EU-West", angle: 30 },
+    { name: "AP-South", angle: 150 },
+  ];
+  const radius = 120;
+  const center = 160;
 
   return (
-    <div className="bg-[#09090b] text-[#fafafa] font-sans antialiased min-h-screen selection:bg-emerald-500 selection:text-slate-950 flex flex-col">
-      
-      {/* HUD System Status Banner */}
-      <div className="bg-[#020204] border-b border-[#1f2937]/40 text-[10px] font-mono text-slate-400 py-1 px-6 flex justify-between items-center select-none">
-        <div className="flex items-center gap-3">
-          <span className="flex h-1.5 w-1.5 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-          </span>
-          <span>MONAD DEVNET RPC: <span className="text-emerald-400 font-bold">CONNECTED</span></span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span>GAS: <span className="text-amber-400 font-bold">12 gwei</span></span>
-          <span className="text-slate-700">|</span>
-          <span>STATION SCORES: <span className="text-[#fafafa] font-bold">100% SLA</span></span>
-        </div>
+    <div className="relative mx-auto flex h-[320px] w-[320px] items-center justify-center">
+      <svg viewBox="0 0 320 320" className="h-full w-full">
+        {regions.map((r) => {
+          const rad = (r.angle * Math.PI) / 180;
+          const x = center + radius * Math.cos(rad);
+          const y = center + radius * Math.sin(rad);
+          return (
+            <line
+              key={r.name}
+              x1={x}
+              y1={y}
+              x2={center}
+              y2={center}
+              stroke="#DCD6FF"
+              strokeWidth={2}
+              strokeDasharray="4 5"
+            >
+              <animate
+                attributeName="stroke-dashoffset"
+                from="18"
+                to="0"
+                dur="1s"
+                repeatCount="indefinite"
+              />
+            </line>
+          );
+        })}
+        <circle cx={center} cy={center} r={34} fill="#F1EEFE" stroke="#7C5CFC" strokeWidth={2} />
+      </svg>
+
+      {/* Center target label */}
+      <div className="absolute flex flex-col items-center">
+        <ShieldCheck className="h-6 w-6 text-[#7C5CFC]" />
       </div>
 
-      <main className="max-w-5xl mx-auto w-full p-6 flex flex-col gap-6">
-        
-        {/* Simple & Clean Header */}
-        <header className="flex justify-between items-center border-b border-slate-800 pb-5">
-          <div className="flex items-center gap-2.5">
-            <div className="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-lg text-emerald-400">
-              <Activity className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-sm font-bold tracking-wider font-mono text-slate-100 uppercase">MONAD // UPTIME.ORACLE</h1>
-              <p className="text-[11px] text-slate-400 font-mono mt-0.5">Decentralized availability networks and regional pings</p>
-            </div>
-          </div>
-
-          {isConnected ? (
-            <div className="flex items-center gap-2 bg-[#0c0d12] border border-slate-800 p-1 pr-2.5 rounded-lg">
-              <span className="text-[10px] bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300 font-mono">
-                {address?.slice(0, 6)}...{address?.slice(-4)}
-              </span>
-              <button 
-                onClick={() => disconnect()}
-                className="text-[10px] font-mono text-red-400 hover:text-red-300 ml-1 border border-red-950/80 bg-red-950/20 px-2.5 py-1 rounded transition"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button 
-              onClick={() => connect({ connector: injected() })}
-              className="text-xs font-mono font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-2 rounded-lg transition"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </header>
-
-        {/* Tab Selector Buttons */}
-        <div className="flex gap-1.5 p-1 bg-slate-900/60 border border-slate-800/80 rounded-xl max-w-xs">
-          <button
-            onClick={() => setActiveTab("owner")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono font-medium rounded-lg transition ${activeTab === "owner" ? "bg-slate-800 border border-slate-700/60 text-emerald-400" : "text-slate-400 hover:text-slate-200"}`}
+      {/* Region nodes */}
+      {regions.map((r) => {
+        const rad = (r.angle * Math.PI) / 180;
+        const x = center + radius * Math.cos(rad);
+        const y = center + radius * Math.sin(rad);
+        return (
+          <div
+            key={r.name}
+            className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5"
+            style={{ left: x, top: y }}
           >
-            <Globe className="h-3.5 w-3.5" /> Owners
-          </button>
-          <button
-            onClick={() => setActiveTab("worker")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-mono font-medium rounded-lg transition ${activeTab === "worker" ? "bg-slate-800 border border-slate-700/60 text-emerald-400" : "text-slate-400 hover:text-slate-200"}`}
-          >
-            <Shield className="h-3.5 w-3.5" /> Operators
-          </button>
-        </div>
-
-        {/* 2-Column Dashboard Workspace */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Column 1: Config Form Controls */}
-          <div className="md:col-span-1 bg-[#0c0d12]/60 border border-slate-800 rounded-xl p-5 flex flex-col gap-4">
-            {activeTab === "owner" ? (
-              <>
-                <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5">
-                  <Globe className="h-4 w-4 text-emerald-400" />
-                  <h2 className="text-xs font-mono font-bold uppercase text-slate-200">Register Website</h2>
-                </div>
-                <p className="text-[11px] text-slate-400 font-mono leading-relaxed">
-                  Fund a decentralized SLA escrow pool. Global peer operators will continuously track availability in real-time.
-                </p>
-                
-                <div className="space-y-3 pt-2">
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block mb-1">Target Website URL</label>
-                    <input 
-                      value={url} 
-                      onChange={(e) => setUrl(e.target.value)} 
-                      type="text" 
-                      placeholder="api.protocol.network" 
-                      className="w-full bg-[#050507] border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 text-slate-100 placeholder:text-slate-600" 
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block mb-1">Escrow SLA Pool Funding (MON)</label>
-                    <input 
-                      value={deposit} 
-                      onChange={(e) => setDeposit(e.target.value)} 
-                      type="number" 
-                      placeholder="0.5" 
-                      className="w-full bg-[#050507] border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 text-slate-100 placeholder:text-slate-600" 
-                    />
-                  </div>
-                  <button 
-                    onClick={handleRegister} 
-                    className="w-full mt-2 bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 border border-emerald-500/20 py-2 rounded-lg text-xs font-mono font-bold transition-all active:scale-95"
-                  >
-                    Deploy to Smart Contract
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5">
-                  <Shield className="h-4 w-4 text-emerald-400" />
-                  <h2 className="text-xs font-mono font-bold uppercase text-slate-200">Emit Latency Audit</h2>
-                </div>
-                <p className="text-[11px] text-slate-400 font-mono leading-relaxed">
-                  Submit cryptographic latency and availability reports. Operator collateral ensures absolute consensus honesty.
-                </p>
-                
-                <div className="space-y-3 pt-2">
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block mb-1">Target Website ID</label>
-                    <select 
-                      value={selectedWebId} 
-                      onChange={(e) => setSelectedWebId(e.target.value)} 
-                      className="w-full bg-[#050507] border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 text-slate-200"
-                    >
-                      {displayedWebsites.map(w => (
-                        <option key={w.id} value={w.id} className="bg-slate-950">ID #{w.id} - {w.url}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block mb-1">Verification Node Region</label>
-                    <select 
-                      value={pingRegion} 
-                      onChange={(e) => setPingRegion(e.target.value)} 
-                      className="w-full bg-[#050507] border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500 text-slate-200"
-                    >
-                      <option value="US-East">US-East (Virginia)</option>
-                      <option value="EU-West">EU-West (Frankfurt)</option>
-                      <option value="AP-South">AP-South (Mumbai)</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button 
-                      onClick={() => handleReport(true)} 
-                      className="bg-emerald-950/20 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-900/50 py-2 rounded-lg text-[10px] font-mono font-bold transition-all active:scale-95"
-                    >
-                      VERIFY ALIVE
-                    </button>
-                    <button 
-                      onClick={() => handleReport(false)} 
-                      className="bg-red-950/20 hover:bg-red-900/30 text-red-400 border border-red-900/50 py-2 rounded-lg text-[10px] font-mono font-bold transition-all active:scale-95"
-                    >
-                      VERIFY DOWN
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
+            <div className="flex h-3 w-3 items-center justify-center rounded-full bg-[#0D8A5F] ring-4 ring-[#E7F8F1]" />
+            <span className="whitespace-nowrap rounded-md border border-[#E8E7ED] bg-white px-2 py-0.5 font-mono text-[10px] text-[#6B6875] shadow-sm">
+              {r.name}
+            </span>
           </div>
-
-          {/* Column 2: Dashboard Analytics & Monitored Targets */}
-          <div className="md:col-span-2 space-y-6">
-            
-            {/* General Stats summary info card */}
-            <div className="bg-[#0c0d12]/60 border border-slate-800 rounded-xl p-5">
-              <h3 className="text-xs font-mono font-bold text-slate-400 mb-3 uppercase tracking-wider">Protocol Global Statistics</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#050507] p-3 border border-slate-800/80 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Total Targets</span>
-                  <span className="text-lg font-bold font-mono text-emerald-400 block mt-1 leading-none">
-                    {websiteCount ? Number(websiteCount) + displayedWebsites.length - 1 : displayedWebsites.length}
-                  </span>
-                </div>
-                <div className="bg-[#050507] p-3 border border-slate-800/80 rounded-lg">
-                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Active Status Queries</span>
-                  <span className="text-lg font-bold font-mono text-slate-300 block mt-1 leading-none">Live Sync Active</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Monitors List */}
-            <div className="bg-[#0c0d12]/60 border border-slate-800 rounded-xl p-5">
-              <h3 className="text-xs font-mono font-bold text-slate-400 mb-3.5 uppercase tracking-wider">On-Chain Registered Infrastructure</h3>
-              <div className="space-y-3">
-                {displayedWebsites.length > 0 ? (
-                  displayedWebsites.map((site) => {
-                    const isHealthy = site.status === "Healthy";
-                    return (
-                      <div key={site.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-[#050507] border border-slate-800/60 rounded-xl gap-4">
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono font-bold">
-                              ID #{site.id}
-                            </span>
-                            <h4 className="text-sm font-semibold text-slate-200 font-mono">{site.url}</h4>
-                          </div>
-                          
-                          <div className="flex items-center gap-3 text-[10px] font-mono text-slate-500">
-                            <span className="flex items-center gap-1">
-                              <Coins className="h-3 w-3 text-slate-600" /> Pool Escrow: <span className="text-emerald-400 font-bold">{site.pool}</span>
-                            </span>
-                            <span>|</span>
-                            <span>SLA Target: <span className="text-slate-300 font-bold">99.98%</span></span>
-                          </div>
-
-                          {/* Ping History ledger status bar */}
-                          <div className="flex items-center gap-1.5 pt-1">
-                            <span className="text-[9px] font-mono text-slate-600">LED SAMPLES:</span>
-                            <div className="flex gap-0.5">
-                              {site.pingHistory.map((up, i) => (
-                                <div 
-                                  key={i} 
-                                  className={`h-3 w-1.5 rounded-[1px] ${up ? "bg-emerald-500/80" : "bg-red-500/80"}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-md border flex items-center gap-1.5 self-start sm:self-center uppercase ${
-                          isHealthy 
-                            ? "bg-emerald-950/20 text-emerald-400 border-emerald-900/80" 
-                            : "bg-amber-950/20 text-amber-400 border-amber-900/80"
-                        }`}>
-                          {isHealthy && (
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                            </span>
-                          )}
-                          {!isHealthy && <span className="inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />}
-                          {site.status}
-                        </span>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="text-xs text-slate-500 font-mono p-2">No registered websites visible on-chain yet.</p>
-                )}
-              </div>
-            </div>
-
-          </div>
-          
-        </div>
-
-      </main>
-
+        );
+      })}
     </div>
   );
 }
